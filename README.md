@@ -65,7 +65,11 @@ Only Node.js is required to start. A track whose toolchain is missing says so in
 
 StackDojo is developed and tested on Windows 11. macOS and Linux should work but are untested.
 
-### Install and run
+### Install on Windows
+
+Download `StackDojo-Setup-<version>.exe` from the [latest release](https://github.com/ForrestLasiter/stackdojo/releases/latest) and run it. The installer is not code-signed, so Windows SmartScreen will warn you the first time: choose **More info → Run anyway**. The installed app does not need Node.js.
+
+### Run from source
 
 ```bash
 git clone https://github.com/ForrestLasiter/stackdojo.git
@@ -133,11 +137,14 @@ npm run smoke       # launch the real app and drive it end to end
 npm run typecheck   # TypeScript check of the interface
 npm run contrast    # WCAG 2.1 AA colour-contrast check
 npm run build       # build the interface into dist/
+npm run dist        # build the Windows installer into release/
 ```
 
 **`npm test`** runs every challenge through the real grader twice: the reference solution must pass, and the unmodified starter code must fail. That guarantees no challenge is unsolvable and none can be passed without doing the work. Pass track ids to check only some of them: `npm test rust bash`. A full run takes about five minutes.
 
 **`npm run smoke`** opens the app against a throwaway profile, solves challenges through the editor, runs a SQL query, plays a drill round and confirms progress was saved, writing screenshots to `smoke-out/`. The window opens on a secondary monitor without taking focus, and the run is skipped if only one display is connected.
+
+**`npm run dist`** produces `release/StackDojo-Setup-<version>.exe` with electron-builder: a per-user NSIS installer (no administrator rights needed) that adds Start menu and desktop shortcuts and an uninstaller. The installed app needs no Node.js; Git Bash and Rust are still required for those two tracks.
 
 Drill questions are checked for structure only (a valid answer, no duplicate choices); their answers are not executed.
 
@@ -182,7 +189,7 @@ The application itself follows Electron's security guidance: the renderer is san
 - **React Native** runs on the web renderer, so `Platform.OS` reports `"web"` and native-only modules are unavailable.
 - **MongoDB** uses an in-memory implementation of the query language, not a MongoDB server; indexes are recorded but do not affect performance.
 - **Speed:** most tracks grade in under a second; Rust and the React-based tracks take two to three seconds per run.
-- There is no packaged installer yet — the app runs from source.
+- The Windows installer is not code-signed, so Windows SmartScreen shows a warning the first time it runs (choose **More info → Run anyway**).
 
 ## License
 

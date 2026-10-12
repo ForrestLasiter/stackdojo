@@ -106,6 +106,14 @@ function typecheck(code, typeTests) {
     moduleResolution: ts.ModuleResolutionKind.Bundler, lib: ['lib.es2022.d.ts'],
   };
   const host = ts.createCompilerHost(opts);
+  // The installer build strips *.d.ts out of node_modules, which would leave
+  // the compiler without its standard library. The installer ships those
+  // files separately in resources/tslib (see "extraResources" in package.json).
+  const packagedLibs = path.join(ROOT, '..', 'tslib');
+  if (fs.existsSync(packagedLibs)) {
+    host.getDefaultLibLocation = () => packagedLibs;
+    host.getDefaultLibFileName = (o) => path.join(packagedLibs, ts.getDefaultLibFileName(o));
+  }
   const orig = host.getSourceFile.bind(host);
   host.getSourceFile = (f, lang) => (f in files ? ts.createSourceFile(f, files[f], lang, true) : orig(f, lang));
   const fe = host.fileExists.bind(host), rf = host.readFile.bind(host);
