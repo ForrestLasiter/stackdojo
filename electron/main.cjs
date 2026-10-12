@@ -9,6 +9,7 @@ const os = require('os');
 
 const tracks = require('../content/index.cjs');
 const { grade, toolchains } = require('../engine/grade.cjs');
+const updates = require('./updater.cjs');
 
 const SMOKE = process.env.DOJO_SMOKE;
 // Smoke runs get a throwaway profile so they can never touch real progress.
@@ -108,8 +109,10 @@ function createWindow() {
 app.whenReady().then(() => {
   Menu.setApplicationMenu(null);
   registerIpc();
-  createWindow();
-  app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
+  const win = createWindow();
+  // Check for a newer release on open — but never during an automated run.
+  if (win) updates.setup(win, { autoCheck: !SMOKE });
+  app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) updates.retarget(createWindow()); });
 });
 
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });

@@ -48,6 +48,7 @@ Each track is split into three tiers — **Warm-up**, **Core** and **Advanced** 
 - **Built to make you think.** Hints are tiered and cost XP. The reference solution stays locked until you have made three real attempts.
 - **Quick-fire drills.** Ten-question rounds of predict-the-output and spot-the-trap questions, with a combo bonus. Questions you have not answered correctly yet come first.
 - **Progress that persists.** XP, stars, streaks and your unfinished code are saved automatically.
+- **Updates itself.** The installed app checks GitHub for a newer release when it opens, and there is a **Check for updates** button in the sidebar. Nothing downloads or installs until you say so.
 - **Keyboard-first and accessible.** `Ctrl+Enter` runs your code from anywhere; the interface targets WCAG 2.1 AA.
 
 ## Getting started
@@ -67,7 +68,7 @@ StackDojo is developed and tested on Windows 11. macOS and Linux should work but
 
 ### Install on Windows
 
-Download `StackDojo-Setup-<version>.exe` from the [latest release](https://github.com/ForrestLasiter/stackdojo/releases/latest) and run it. The installer is not code-signed, so Windows SmartScreen will warn you the first time: choose **More info → Run anyway**. The installed app does not need Node.js.
+Download `StackDojo-Setup-<version>.exe` from the [latest release](https://github.com/ForrestLasiter/stackdojo/releases/latest) and run it. The installer is not code-signed, so Windows SmartScreen will warn you the first time: choose **More info → Run anyway**. The installed app does not need Node.js, and updates itself from then on: it checks for a new release each time it opens and offers to download it.
 
 ### Run from source
 
@@ -181,7 +182,7 @@ The code editor captures the Tab key for indentation; press `Esc` and then `Tab`
 
 StackDojo runs code you write, on your own machine, with your own permissions — the same as running it in a terminal. It is a practice tool, not a sandbox for untrusted code.
 
-The application itself follows Electron's security guidance: the renderer is sandboxed with context isolation and no Node integration, reaches the main process only through four named IPC calls, runs under a Content Security Policy, and cannot navigate away or open new windows.
+The application itself follows Electron's security guidance: the renderer is sandboxed with context isolation and no Node integration, reaches the main process only through a small set of named IPC calls (run, load, save, content and the updater controls), runs under a Content Security Policy, and cannot navigate away or open new windows.
 
 ## Limitations
 

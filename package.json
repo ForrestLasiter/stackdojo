@@ -1,6 +1,6 @@
 {
   "name": "stackdojo",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A gamified desktop practice app for a full modern stack, where every answer is actually run",
   "private": true,
   "license": "MIT",
@@ -22,12 +22,13 @@
     "smoke": "vite build && node scripts/smoke.cjs",
     "contrast": "node scripts/contrast.cjs",
     "typecheck": "tsc --noEmit",
-    "dist": "vite build && electron-builder --win"
+    "dist": "vite build && electron-builder --win --publish never"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.8",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/react": "^16.3.3",
+    "electron-updater": "^6.8.9",
     "esbuild": "^0.28.2",
     "jsdom": "^30.1.2",
     "mingo": "^7.2.4",
@@ -98,6 +99,13 @@
         "filter": [
           "lib*.d.ts"
         ]
+      }
+    ],
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "ForrestLasiter",
+        "repo": "stackdojo"
       }
     ]
   }

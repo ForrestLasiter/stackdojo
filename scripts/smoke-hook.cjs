@@ -50,6 +50,12 @@ module.exports = function smoke(win, outDir) {
       if (bad.length) throw new Error(bad.join('\n'));
     });
 
+    await step('update panel shows the version and explains itself when run from source', async () => {
+      await waitFor('.updates');
+      const u = await js(`const s = await window.dojo.update.get(); return { status: s.status, current: s.current, text: document.querySelector('.updates').innerText }`);
+      if (u.status !== 'unsupported' || !u.text.includes('v' + u.current) || !/installed app/.test(u.text)) throw new Error('unexpected update panel: ' + JSON.stringify(u));
+    });
+
     await step('track page', async () => { await click('.nav-item.track', 'JavaScript'); await waitFor('.rows .row'); await shot('2-track'); });
 
     await step('solve a challenge through the editor', async () => {

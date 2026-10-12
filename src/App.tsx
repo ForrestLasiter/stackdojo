@@ -14,8 +14,20 @@ declare global {
       run(trackId: string, challengeId: string, code: string): Promise<RunResult>;
       load(): Promise<unknown>;
       save(state: Progress): Promise<boolean>;
+      update: {
+        get(): Promise<UpdateState>;
+        check(): Promise<UpdateState>;
+        download(): Promise<UpdateState>;
+        install(): Promise<boolean>;
+        onStatus(callback: (state: UpdateState) => void): void;
+      };
     };
   }
+}
+
+interface UpdateState {
+  status: 'unsupported' | 'idle' | 'checking' | 'none' | 'available' | 'downloading' | 'ready' | 'error';
+  current: string; version: string; percent: number; message: string;
 }
 
 type View =
@@ -156,6 +168,7 @@ export default function App() {
             })}
           </ul>
         </nav>
+        <UpdatePanel notify={notify} />
       </aside>
       <main id="main" ref={main} tabIndex={-1}>{page}</main>
       <div className="toasts" role="status" aria-live="polite">
@@ -167,6 +180,50 @@ export default function App() {
         ))}
       </div>
     </div>
+  );
+}
+
+// ---------- updates ----------
+function UpdatePanel({ notify }: { notify: (n: Notice[]) => void }) {
+  const [u, setU] = useState<UpdateState | null>(null);
+  const announced = useRef('');
+
+  useEffect(() => {
+    window.dojo.update.get().then(setU).catch(() => {});
+    window.dojo.update.onStatus(setU);
+  }, []);
+
+  // Tell the user once when the check on launch finds something.
+  useEffect(() => {
+    if (u?.status === 'available' && announced.current !== u.version) {
+      announced.current = u.version;
+      notify([{ kind: 'level', title: `Update available: v${u.version}`, detail: 'Download it from the bottom of the sidebar.' }]);
+    }
+  }, [u, notify]);
+
+  if (!u) return null;
+  const text: Record<UpdateState['status'], string> = {
+    unsupported: u.message,
+    idle: '',
+    checking: 'Checking for updates…',
+    none: 'You have the latest version.',
+    available: `Version ${u.version} is available.`,
+    downloading: `Downloading v${u.version || ''}… ${u.percent}%`,
+    ready: `Version ${u.version} is ready to install.`,
+    error: u.message || 'The update check failed.',
+  };
+
+  return (
+    <section className="updates" aria-label="App updates">
+      <div className="me-row small"><span>StackDojo v{u.current}</span></div>
+      {u.status === 'downloading' && <Bar value={u.percent} max={100} label="Update download" />}
+      <p className={u.status === 'error' ? 'small update-msg warn' : 'small update-msg'} role="status">{text[u.status]}</p>
+      {u.status === 'available' && <button className="btn primary small-btn wide" onClick={() => window.dojo.update.download()}>Download v{u.version}</button>}
+      {u.status === 'ready' && <button className="btn primary small-btn wide" onClick={() => window.dojo.update.install()}>Restart to update</button>}
+      {(u.status === 'idle' || u.status === 'none' || u.status === 'error' || u.status === 'checking') && (
+        <button className="btn small-btn wide" disabled={u.status === 'checking'} onClick={() => window.dojo.update.check()}>Check for updates</button>
+      )}
+    </section>
   );
 }
 

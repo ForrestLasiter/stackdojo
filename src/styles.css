@@ -70,6 +70,13 @@ kbd { background: var(--panel-2); border: 1px solid var(--edge); border-radius: 
 .belt { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; }
 .belt-swatch { display: inline-block; width: 18px; height: 8px; border-radius: 2px; border: 1px solid #aab3c3; }
 
+/* Pinned to the bottom of the sidebar so the update button is always in view,
+   however long the track list is. */
+.updates { position: sticky; bottom: -18px; margin: auto -12px -18px; background: var(--panel); border-top: 1px solid var(--line); padding: 10px 20px 14px; display: grid; gap: 6px; color: var(--muted); }
+.update-msg { min-height: 1.4em; }
+.update-msg.warn { color: var(--accent); }
+.btn.wide { width: 100%; margin: 0; }
+
 main { overflow-y: auto; min-width: 0; }
 main:focus { outline: none; }
 .page { max-width: 1040px; margin: 0 auto; padding: 30px 34px 60px; }
